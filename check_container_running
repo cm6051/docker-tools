@@ -1,0 +1,39 @@
+#!/bin/sh
+
+# Script to be called by nrpe to make sure a Docker container from a 
+# specific image is currently running.  Note the regex is greedy.
+# Matt Saunders, 2015-07-07
+
+# Find docker binary
+DOCKER=$(which docker docker.io docker-io)
+
+if [ -z ${DOCKER} ]; then
+  echo "ERROR: cannot find docker binary"
+  exit 126
+fi
+
+if [ $# -ne 1 ]; then
+  echo "ERROR: parameter must be image regex"
+  exit 127
+fi
+
+IMAGE_REGEX=$1
+
+# Get the first entry for a container matching the regex
+CONTAINER_ID=$(${DOCKER} ps -a | awk "\$2 ~ /${IMAGE_REGEX}/ { print \$1 }" | head -1)
+
+if [ -z "${CONTAINER_ID}" ]; then
+  echo "ERROR: No container with image matching /${IMAGE_REGEX}/ is running"
+  exit 2
+fi
+
+# Check the metadata of the container to make sure it's actually running
+CONTAINER_STATUS=$(${DOCKER} inspect -f "{{.State.Running}}" ${CONTAINER_ID})
+
+if [ "${CONTAINER_STATUS}" = "true" ]; then
+  echo "OK: Container ${CONTAINER_ID} matches image regex /${IMAGE_REGEX}/ and is running"
+  exit 0
+else
+  echo "ERROR: Container ${CONTAINER_ID} matching image regex /${IMAGE_REGEX}/ found, but is not running"
+  exit 2
+fi
