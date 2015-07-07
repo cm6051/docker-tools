@@ -1,4 +1,5 @@
 #!/usr/bin/env bats
+# BATS is https://github.com/sstephenson/bats
 
 @test "invoking without a parameter prints an error" {
   run ./check_container_running
