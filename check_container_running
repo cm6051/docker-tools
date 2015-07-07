@@ -12,6 +12,13 @@ if [ -z ${DOCKER} ]; then
   exit 62
 fi
 
+# Make sure the user running the script can access the Docker daemon
+${DOCKER} info 2>/dev/null > /dev/null
+if [ $? -ne 0 ]; then
+  echo "ERROR: cannot communicate with Docker - is user in the docker group?"
+  exit 61
+fi
+
 if [ $# -ne 1 ]; then
   echo "ERROR: parameter must be image regex"
   exit 63
