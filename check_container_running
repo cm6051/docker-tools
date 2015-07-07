@@ -9,12 +9,12 @@ DOCKER=$(which docker docker.io docker-io)
 
 if [ -z ${DOCKER} ]; then
   echo "ERROR: cannot find docker binary"
-  exit 126
+  exit 62
 fi
 
 if [ $# -ne 1 ]; then
   echo "ERROR: parameter must be image regex"
-  exit 127
+  exit 63
 fi
 
 IMAGE_REGEX=$1
