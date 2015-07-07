@@ -4,8 +4,8 @@
 # specific image is currently running.  Note the regex is greedy.
 # Matt Saunders, 2015-07-07
 
-# Find docker binary
-DOCKER=$(which docker docker.io docker-io)
+# Find docker binary, and only the first one
+DOCKER=$(which docker docker.io docker-io 2> /dev/null | head -1)
 
 if [ -z ${DOCKER} ]; then
   echo "ERROR: cannot find docker binary"
